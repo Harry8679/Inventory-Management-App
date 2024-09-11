@@ -8,6 +8,10 @@ const app = express();
 
 const PORT = process.env.PORT || 4500;
 
+app.get('/', (req, res) => {
+    res.send('Hello from the API');
+});
+
 // Connexion à la base de données
 connectDB();
 
