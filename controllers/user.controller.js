@@ -5,7 +5,11 @@ const home = asyncHandler(async(req, res) => {
 });
 
 const register = asyncHandler(async(req, res) => {
-    res.send('Hello from Controller');
+    if (!req.body.email) {
+        res.status(400);
+        throw new Error('Please add an email address in the form register');
+    }
+    res.send('Register User');
 });
 
 module.exports = { home, register };

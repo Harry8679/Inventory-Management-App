@@ -5,6 +5,7 @@ const connectDB = require('./config/connectDB');
 dotenv.config();
 
 const userRoutes = require('./routes/user.route');
+const errorHandler = require('./middlewares/error.middleware');
 
 const app = express();
 
@@ -18,6 +19,9 @@ app.use('/api/v1/users', userRoutes);
 
 // Connexion à la base de données
 connectDB();
+
+// Error Middlewares
+app.use(errorHandler);
 
 // Démarrer le serveur
 app.listen(PORT, () => {
