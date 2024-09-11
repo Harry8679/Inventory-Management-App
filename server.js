@@ -4,9 +4,13 @@ const dotenv = require('dotenv');
 const connectDB = require('./config/connectDB');
 dotenv.config();
 
+const userRoutes = require('./routes/user.route');
+
 const app = express();
 
 const PORT = process.env.PORT || 4500;
+
+app.use('/api/v1/users', userRoutes);
 
 app.get('/', (req, res) => {
     res.send('Hello from the API');
