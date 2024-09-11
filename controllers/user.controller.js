@@ -1,9 +1,11 @@
-const home = (req, res) => {
-    res.send('Hello from Controller');
-}
+const asyncHandler = require('express-async-handler');
 
-const register = (req, res) => {
-    res.send('Register Controller');
-}
+const home = asyncHandler(async(req, res) => {
+    res.send('Hello from Controller');
+});
+
+const register = asyncHandler(async(req, res) => {
+    res.send('Hello from Controller');
+});
 
 module.exports = { home, register };
