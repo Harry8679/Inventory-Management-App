@@ -59,4 +59,8 @@ const register = asyncHandler(async(req, res) => {
     }
 });
 
-module.exports = { home, register };
+const login = asyncHandler(async(req, res) => {
+    res.send('Login Page');
+});
+
+module.exports = { home, register, login };
