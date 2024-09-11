@@ -5,11 +5,13 @@ const home = asyncHandler(async(req, res) => {
 });
 
 const register = asyncHandler(async(req, res) => {
-    if (!req.body.email) {
+    const { name, email, password } = req.body;
+
+    // Validation
+    if (!name || !email || !password) {
         res.status(400);
-        throw new Error('Please add an email address in the form register');
+        throw new Error('Please fill in all required fields');
     }
-    res.send('Register User');
 });
 
 module.exports = { home, register };
