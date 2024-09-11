@@ -12,10 +12,6 @@ const PORT = process.env.PORT || 4500;
 
 app.use('/api/v1/users', userRoutes);
 
-app.get('/', (req, res) => {
-    res.send('Hello from the API');
-});
-
 // Connexion à la base de données
 connectDB();
 
