@@ -1,5 +1,10 @@
 const asyncHandler = require('express-async-handler');
 const User = require('../models/user.model');
+const jwt = require('jsonwebtoken');
+
+const generateToken = (id) => {
+    return jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: '1d' });
+}
 
 const home = asyncHandler(async(req, res) => {
     res.send('Hello from Controller');
@@ -32,10 +37,13 @@ const register = asyncHandler(async(req, res) => {
     // Create new user
     const user = await User.create({ name, email, password });
 
+    // Generate Token
+    const token = generateToken(user._id);
+
     if (user) {
         const { _id, name, email, photo, phone, bio } = user;
 
-        res.status(201).json({ _id, name, email, photo, phone, bio });
+        res.status(201).json({ _id, name, email, photo, phone, bio, token });
     } else {
         res.status(400);
         throw new Error('Invalid user data');
