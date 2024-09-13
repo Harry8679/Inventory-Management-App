@@ -128,4 +128,8 @@ const getUser = asyncHandler(async (req, res) => {
     }
 });
 
-module.exports = { home, register, login, logout, getUser };
+const loginStatus = asyncHandler(async (req, res) => {
+    res.send('Login Status');
+});
+
+module.exports = { home, register, login, logout, getUser, loginStatus };
