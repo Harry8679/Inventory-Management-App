@@ -9,6 +9,6 @@ router.post('/login', login);
 router.get('/logout', logout);
 router.get('/getUser', protect, getUser);
 router.get('/loginStatus', loginStatus);
-router.put('/updateUser', updateUser);
+router.put('/updateUser', protect, updateUser);
 
 module.exports = router;
