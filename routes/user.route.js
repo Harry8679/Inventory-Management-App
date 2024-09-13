@@ -8,6 +8,6 @@ router.post('/register', register);
 router.post('/login', login);
 router.get('/logout', logout);
 router.get('/getUser', protect, getUser);
-router.get('/loginStatus', protect, loginStatus);
+router.get('/loginStatus', loginStatus);
 
 module.exports = router;
