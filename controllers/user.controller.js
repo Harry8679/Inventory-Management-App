@@ -231,6 +231,15 @@ const forgotPassword = asyncHandler(async(req, res) => {
     // Construct Reset Url
     const resetUrl = `${process.env.FRONTEND_URI}/resetPassword/${resetToken}`;
 
+    // Reset Email
+    const message = `<h2>Hello ${user.name}</h2>
+        <p>Please use the url below to reset your password</p>
+        <a href=${resetUrl} clicktracking=off>${resetUrl}</a>
+
+        <p>Best regards ...</p>
+        <p>Emarh Team</p>
+    `
+
     res.send('Forgot Password');
 });
 
