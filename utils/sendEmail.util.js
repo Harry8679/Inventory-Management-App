@@ -26,9 +26,15 @@ const sendEmail = async (subject, message, send_to, sent_from, reply_to) => {
     transporter.sendMail(options, function (ree, info) {
         if (err) {
             console.log(err);
+        } else {
+            console.log(info);
         }
-        console.log(info);
     });
+
+    if (!user) {
+        res.status(404);
+        throw new Error('User does not exist');
+    }
 };
 
 module.exports = sendEmail;
