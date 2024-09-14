@@ -4,6 +4,7 @@ const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const crypto = require('crypto');
 const Token = require('../models/token.model');
+const sendEmail = require('../utils/sendEmail.util');
 
 const generateToken = (id) => {
     return jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: '1d' });
@@ -225,7 +226,7 @@ const forgotPassword = asyncHandler(async(req, res) => {
         userId: user._id,
         token: hashedToken,
         createdAt: Date.now(),
-        expires: Date.now() + 30 * (60 * 1000), // Thirty minutes
+        expiresAt: Date.now() + 30 * (60 * 1000), // Thirty minutes
     }).save();
 
     // Construct Reset Url
@@ -238,7 +239,19 @@ const forgotPassword = asyncHandler(async(req, res) => {
 
         <p>Best regards ...</p>
         <p>Emarh Team</p>
-    `
+    `;
+
+    const subject = 'Password Reset Request';
+    const send_to = user.email;
+    const sent_from = process.env.EMAIL_USER;
+
+    try {
+        await sendEmail(subject, message, send_to, sent_from);
+        res.status(200).json({ success: true, message: 'Reset Email Sent' });
+    } catch(err) {
+        res.status(500);
+        throw new Error('Email not sent, please try again');
+    }
 
     res.send('Forgot Password');
 });
