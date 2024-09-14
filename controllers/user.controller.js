@@ -3,6 +3,7 @@ const User = require('../models/user.model');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const crypto = require('crypto');
+const Token = require('../models/token.model');
 
 const generateToken = (id) => {
     return jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: '1d' });
@@ -218,6 +219,17 @@ const forgotPassword = asyncHandler(async(req, res) => {
     // Hash token before saving to DB
     const hashedToken = crypto.createHash('sha256').update(resetToken).digest('hex');
     console.log('hashedToken', hashedToken);
+
+    // Save Token to DB
+    await new Token({
+        userId: user._id,
+        token: hashedToken,
+        createdAt: Date.now(),
+        expires: Date.now() + 30 * (60 * 1000), // Thirty minutes
+    }).save();
+
+    // Construct Reset Url
+    const resetUrl = `${process.env.FRONTEND_URI}/resetPassword/${resetToken}`;
 
     res.send('Forgot Password');
 });
