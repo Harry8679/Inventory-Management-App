@@ -204,7 +204,57 @@ const changePassword = asyncHandler(async (req, res) => {
     }
 });
 
-const forgotPassword = asyncHandler(async(req, res) => {
+// const forgotPassword = asyncHandler(async(req, res) => {
+//     const { email } = req.body;
+//     const user = await User.findOne({ email });
+
+//     if (!user) {
+//         res.status(404);
+//         throw new Error('User does not exist');
+//     }
+
+//     // Create Reset Token
+//     let resetToken = crypto.randomBytes(32).toString('hex') + user._id;
+//     console.log('resetToken', resetToken);
+
+//     // Hash token before saving to DB
+//     const hashedToken = crypto.createHash('sha256').update(resetToken).digest('hex');
+//     console.log('hashedToken', hashedToken);
+
+//     // Save Token to DB
+//     await new Token({
+//         userId: user._id,
+//         token: hashedToken,
+//         createdAt: Date.now(),
+//         expiresAt: Date.now() + 30 * (60 * 1000), // Thirty minutes
+//     }).save();
+
+//     // Construct Reset Url
+//     const resetUrl = `${process.env.FRONTEND_URI}/resetPassword/${resetToken}`;
+
+//     // Reset Email
+//     const message = `<h2>Hello ${user.name}</h2>
+//         <p>Please use the url below to reset your password</p>
+//         <a href=${resetUrl} clicktracking=off>${resetUrl}</a>
+
+//         <p>Best regards ...</p>
+//         <p>Emarh Team</p>
+//     `;
+
+//     const subject = 'Password Reset Request';
+//     const send_to = user.email;
+//     const sent_from = process.env.EMAIL_USER;
+
+//     try {
+//         await sendEmail(subject, message, send_to, sent_from);
+//         res.status(200).json({ success: true, message: 'Reset Email Sent' });
+//     } catch(err) {
+//         res.status(500);
+//         throw new Error('Email not sent, please try again');
+//     }
+// });
+
+const forgotPassword = asyncHandler(async (req, res) => {
     const { email } = req.body;
     const user = await User.findOne({ email });
 
@@ -213,26 +263,26 @@ const forgotPassword = asyncHandler(async(req, res) => {
         throw new Error('User does not exist');
     }
 
-    // Create Reset Token
+    // Créer un jeton de réinitialisation
     let resetToken = crypto.randomBytes(32).toString('hex') + user._id;
     console.log('resetToken', resetToken);
 
-    // Hash token before saving to DB
+    // Hacher le jeton avant de l'enregistrer dans la base de données
     const hashedToken = crypto.createHash('sha256').update(resetToken).digest('hex');
     console.log('hashedToken', hashedToken);
 
-    // Save Token to DB
+    // Enregistrer le jeton dans la base de données
     await new Token({
         userId: user._id,
         token: hashedToken,
         createdAt: Date.now(),
-        expiresAt: Date.now() + 30 * (60 * 1000), // Thirty minutes
+        expiresAt: Date.now() + 30 * (60 * 1000), // Trente minutes
     }).save();
 
-    // Construct Reset Url
+    // Construire l'URL de réinitialisation
     const resetUrl = `${process.env.FRONTEND_URI}/resetPassword/${resetToken}`;
 
-    // Reset Email
+    // Message de réinitialisation
     const message = `<h2>Hello ${user.name}</h2>
         <p>Please use the url below to reset your password</p>
         <a href=${resetUrl} clicktracking=off>${resetUrl}</a>
@@ -247,13 +297,14 @@ const forgotPassword = asyncHandler(async(req, res) => {
 
     try {
         await sendEmail(subject, message, send_to, sent_from);
+        // Réponse envoyée après l'envoi de l'e-mail
         res.status(200).json({ success: true, message: 'Reset Email Sent' });
-    } catch(err) {
+    } catch (err) {
         res.status(500);
         throw new Error('Email not sent, please try again');
     }
-
-    res.send('Forgot Password');
 });
+
+
 
 module.exports = { home, register, login, logout, getUser, loginStatus, updateUser, changePassword, forgotPassword };
