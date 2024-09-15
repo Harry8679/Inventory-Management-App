@@ -262,7 +262,22 @@ const forgotPassword = asyncHandler(async (req, res) => {
 });
 
 const resetPassword = asyncHandler (async(req, res) => {
-    res.send('Reset Password');
+    const { password } = req.body;
+    const { resetToken } = req.params;
+
+    // Hash token, then compare to Token in DB
+    const hashedToken = crypto.createHash('sha256').update(resetToken).digest('hex');
+
+    // Find token in DB
+    const userToken = await Token.findOne({
+        token: hashedToken,
+        expiresAt: {$gt: Data.now()}
+    });
+
+    if (!userToken) {
+        res.status(404);
+        throw new Error('Invalid or Expired Token');
+    }
 });
 
 
