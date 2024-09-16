@@ -6,6 +6,7 @@ const connectDB = require('./config/connectDB');
 dotenv.config();
 
 const userRoutes = require('./routes/user.route');
+const productRoutes = require('./routes/product.route');
 const errorHandler = require('./middlewares/error.middleware');
 
 const app = express();
@@ -18,6 +19,7 @@ app.use(cors());
 const PORT = process.env.PORT || 4500;
 
 app.use('/api/v1/users', userRoutes);
+app.use('/api/v1/products', productRoutes);
 
 // Connexion à la base de données
 connectDB();
