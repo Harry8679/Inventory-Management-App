@@ -1,6 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const cookieParser = require('cookie-parser');
+const path = require('path');
 const dotenv = require('dotenv');
 const connectDB = require('./config/connectDB');
 dotenv.config();
@@ -10,6 +11,8 @@ const productRoutes = require('./routes/product.route');
 const errorHandler = require('./middlewares/error.middleware');
 
 const app = express();
+
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // Middlewares
 app.use(express.json());
