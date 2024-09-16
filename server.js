@@ -8,6 +8,7 @@ dotenv.config();
 
 const userRoutes = require('./routes/user.route');
 const productRoutes = require('./routes/product.route');
+const contactUseRoute = require('./routes/contact.route');
 const errorHandler = require('./middlewares/error.middleware');
 
 const app = express();
@@ -23,6 +24,7 @@ const PORT = process.env.PORT || 4500;
 
 app.use('/api/v1/users', userRoutes);
 app.use('/api/v1/products', productRoutes);
+app.use('/api/v1/contactUs', contactUseRoute);
 
 // Connexion à la base de données
 connectDB();
