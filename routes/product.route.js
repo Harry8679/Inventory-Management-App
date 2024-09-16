@@ -1,9 +1,10 @@
 const express = require('express');
-const { createProduct } = require('../controllers/product.controller');
+const { createProduct, getProducts } = require('../controllers/product.controller');
 const { protect } = require('../middlewares/auth.middleware');
 const { upload } = require('../utils/fileUpload.util');
 const router = express.Router();
 
 router.post('/', protect, upload.single('image'), createProduct);
+router.get('/', getProducts);
 
 module.exports = router;
