@@ -5,6 +5,6 @@ const { upload } = require('../utils/fileUpload.util');
 const router = express.Router();
 
 router.post('/', protect, upload.single('image'), createProduct);
-router.get('/', getProducts);
+router.get('/', protect, getProducts);
 
 module.exports = router;
