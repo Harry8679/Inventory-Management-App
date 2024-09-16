@@ -63,4 +63,8 @@ const getSingleProduct = asyncHandler(async(req, res) => {
     res.status(200).json(product);
 });
 
-module.exports = { createProduct, getProducts, getSingleProduct };
+const deleteProduct = asyncHandler(async(req, res) => {
+    res.send('Delete a Product');
+});
+
+module.exports = { createProduct, getProducts, getSingleProduct, deleteProduct };
