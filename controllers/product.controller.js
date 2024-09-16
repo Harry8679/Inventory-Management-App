@@ -63,10 +63,6 @@ const getSingleProduct = asyncHandler(async(req, res) => {
     res.status(200).json(product);
 });
 
-// const deleteProduct = asyncHandler(async(req, res) => {
-//     res.send('Delete a Product');
-// });
-
 const deleteProduct = asyncHandler(async(req, res) => {
     const product = await Product.findById(req.params.id);
 
@@ -85,4 +81,8 @@ const deleteProduct = asyncHandler(async(req, res) => {
     res.status(200).json({ message: 'Product removed successfuly !' });
 });
 
-module.exports = { createProduct, getProducts, getSingleProduct, deleteProduct };
+const updateProduct = asyncHandler(async(req, res) => {
+    res.send('Update a Product');
+});
+
+module.exports = { createProduct, getProducts, getSingleProduct, deleteProduct, updateProduct };
