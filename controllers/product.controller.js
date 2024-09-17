@@ -82,61 +82,126 @@ const deleteProduct = asyncHandler(async(req, res) => {
 });
 
 const updateProduct = asyncHandler(async (req, res) => {
-    const { name, category, quantity, price, description } = req.body;
     const { id } = req.params;
+    const { name, sku, category, quantity, price, description } = req.body;
 
     // Vérifiez si le produit existe
     const product = await Product.findById(id);
-
-    console.log('Données de la requête :', req.body);
-    console.log('Produit avant mise à jour :', product);
-
-    console.log('User ID:', req.user.id);
-    console.log('Product User ID:', product.user.toString());
-
     if (!product) {
         res.status(404);
         throw new Error('Product not found');
     }
 
-    // Vérifiez si l'utilisateur est autorisé à mettre à jour ce produit
+    // Vérifiez si l'utilisateur est autorisé à modifier ce produit
     if (product.user.toString() !== req.user.id) {
         res.status(401);
         throw new Error('User not authorized');
     }
 
+    // Gestion de l'upload de la nouvelle image si elle est présente
+    let fileData = product.image; // Conserver l'image actuelle si aucune nouvelle image n'est uploadée
     if (req.file) {
+        // Supprimer l'ancienne image de Cloudinary avant d'en uploader une nouvelle
+        if (product.image && product.image.filePath) {
+            const publicId = product.image.filePath.split('/').pop().split('.')[0]; // Extraire l'ID public de Cloudinary
+            await cloudinary.uploader.destroy(publicId); // Supprimer l'image de Cloudinary
+        }
+
         try {
             const uploadedFile = await cloudinary.uploader.upload(req.file.path, {
                 folder: "ManagementInvent App",
-                resource_type: "image"
+                resource_type: "image",
             });
-    
+
             fileData = {
                 fileName: req.file.originalname,
                 filePath: uploadedFile.secure_url,
                 fileType: req.file.mimetype,
                 fileSize: fileSizeFormatter(req.file.size, 2),
             };
-            updatedFields.image = fileData; // Mettez à jour l'image uniquement si une nouvelle est uploadée
-
-            product.name = name || product.name;
-            product.category = category || product.category;
-            product.quantity = quantity || product.quantity;
-            product.price = price || product.price;
-            product.description = description || product.description;
-            product.image = fileData;
-
-            // Sauvegarde manuelle des modifications
-            const updatedProduct = await product.save();
-            console.log('Produit mis à jour avec save():', updatedProduct);
-            res.status(200).json(updatedProduct);
         } catch (err) {
             res.status(500);
             throw new Error('Image could not be uploaded');
         }
     }
+
+    // Mise à jour des champs modifiés uniquement
+    const updatedProduct = await Product.findByIdAndUpdate(
+        id,
+        {
+            name: name || product.name,
+            sku: sku || product.sku,
+            category: category || product.category,
+            quantity: quantity || product.quantity,
+            price: price || product.price,
+            description: description || product.description,
+            image: fileData // Mettre à jour l'image si elle a changé
+        },
+        { new: true, runValidators: true } // `new: true` pour renvoyer le produit mis à jour
+    );
+
+    res.status(200).json(updatedProduct);
 });
+
+
+// const updateProduct = asyncHandler(async (req, res) => {
+//     const { id } = req.params; // Récupérer l'ID du produit depuis les paramètres de la requête
+//     const { name, category, quantity, price, description } = req.body; // Récupérer les données du corps de la requête
+
+//     // Vérifier si le produit existe
+//     const product = await Product.findById(id);
+//     if (!product) {
+//         res.status(404);
+//         throw new Error('Product not found');
+//     }
+
+//     // Vérifier si l'utilisateur est autorisé à mettre à jour ce produit
+//     if (product.user.toString() !== req.user.id) {
+//         res.status(401);
+//         throw new Error('User not authorized');
+//     }
+
+//     // Gestion de l'upload de la nouvelle image si elle est présente
+//     let fileData = product.image; // Conserver l'image actuelle si aucune nouvelle image n'est uploadée
+//     if (req.file) {
+//         // Supprimer l'ancienne image de Cloudinary avant d'en uploader une nouvelle
+//         if (product.image && product.image.filePath) {
+//             const publicId = product.image.filePath.split('/').pop().split('.')[0]; // Extraire l'ID public de Cloudinary
+//             await cloudinary.uploader.destroy(publicId); // Supprimer l'image de Cloudinary
+//         }
+
+//         try {
+//             const uploadedFile = await cloudinary.uploader.upload(req.file.path, {
+//                 folder: "ManagementInvent App",
+//                 resource_type: "image",
+//             });
+
+//             fileData = {
+//                 fileName: req.file.originalname,
+//                 filePath: uploadedFile.secure_url,
+//                 fileType: req.file.mimetype,
+//                 fileSize: fileSizeFormatter(req.file.size, 2),
+//             };
+//         } catch (err) {
+//             res.status(500);
+//             throw new Error('Image could not be uploaded');
+//         }
+//     }
+
+//     // Mise à jour du produit avec les nouveaux champs (ou anciens si non modifiés)
+//     product.name = name || product.name;
+//     product.category = category || product.category;
+//     product.quantity = quantity || product.quantity;
+//     product.price = price || product.price;
+//     product.description = description || product.description;
+//     product.image = fileData; // Mettre à jour l'image
+
+//     // Sauvegarder les modifications
+//     const updatedProduct = await product.save();
+
+//     res.status(200).json(updatedProduct);
+// });
+
 
 
 // const updateProduct = asyncHandler(async (req, res) => {
